@@ -5,7 +5,7 @@ class S3Controller {
 
     async uploadFile(req, res) {
         try {
-            const { base64Data, folderName, format } = req.body;
+            const { base64Data, folderName, format, fileName } = req.body;
             if (!base64Data || !folderName || !format) {
                 return res.status(400).json({ message: 'Missing required fields' });
             }
@@ -21,7 +21,7 @@ class S3Controller {
             const buffer = Buffer.from(base64Data.replace(/^data:(.*);base64,/, ''), 'base64');
 
             const bucketName = process.env.S3_BUCKET;
-            const key = `${folderName}/${Date.now()}.${format}`;
+            const key = `${folderName}/${fileName}.${format}`;
 
             const result = await this.s3Service.upload(bucketName, key, buffer);
             res.status(200).json({ message: 'File uploaded successfully', data: result, fileType });
