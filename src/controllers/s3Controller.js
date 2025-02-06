@@ -22,7 +22,7 @@ class S3Controller {
 
             const bucketName = process.env.S3_BUCKET;
             const key = `${folderName}/${Date.now()}.${format}`;
-            
+
             const result = await this.s3Service.upload(bucketName, key, buffer);
             res.status(200).json({ message: 'File uploaded successfully', data: result, fileType });
             console.log('File uploaded successfully:', result);
@@ -53,6 +53,34 @@ class S3Controller {
             console.log('File deleted successfully:', fileName);
         } catch (error) {
             res.status(500).json({ message: 'Error deleting file', error: error.message });
+        }
+    }
+
+
+    async listObjects(req, res) {
+        try {
+            const result = await this.s3Service.listObjects();
+            if (!result.Contents) {
+                return res.status(200).json({ message: 'No objects found in bucket', data: [] });
+            }
+
+            const objects = result.Contents.map(obj => ({
+                key: obj.Key,
+                size: obj.Size,
+                lastModified: obj.LastModified
+            }));
+
+            res.status(200).json({
+                message: 'Objects retrieved successfully',
+                data: objects
+            });
+            console.log('Objects listed successfully:', objects);
+        } catch (error) {
+            res.status(500).json({
+                message: 'Error listing objects',
+                error: error.message
+            });
+            console.error('Error listing objects:', error);
         }
     }
 }

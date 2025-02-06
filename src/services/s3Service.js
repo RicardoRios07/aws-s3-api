@@ -22,7 +22,7 @@ class S3Service {
         try {
             const command = new ListObjectsCommand({ Bucket: 's3rickbucket' });
             const response = await this.s3.send(command);
-    
+
             if (!response.Contents || response.Contents.length === 0) {
                 console.log('No objects in the bucket');
                 return false;
@@ -35,7 +35,7 @@ class S3Service {
             throw new Error('Failed to connect to S3');
         }
     }
-    
+
 
     async upload(bucketName, key, body) {
         const command = new PutObjectCommand({ Bucket: bucketName, Key: key, Body: body });
@@ -50,6 +50,19 @@ class S3Service {
     async delete(bucketName, key) {
         const command = new DeleteObjectCommand({ Bucket: bucketName, Key: key });
         return await this.s3.send(command);
+    }
+
+    async listObjects() {
+        try {
+            const command = new ListObjectsCommand({
+                Bucket: process.env.S3_BUCKET // Using environment variable instead of hardcoded value
+            });
+            const response = await this.s3.send(command);
+            return response;
+        } catch (error) {
+            console.error('Error listing S3 objects:', error);
+            throw new Error('Failed to list S3 objects');
+        }
     }
 }
 
