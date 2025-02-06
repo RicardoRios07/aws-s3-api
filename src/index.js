@@ -10,7 +10,7 @@ const s3Service = new S3Service();
 app.use(express.json());
 app.use('/api/s3', s3Routes);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5050;
 app.listen(PORT, async () => {
     try {
         await s3Service.checkConnection();
